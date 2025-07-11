@@ -1,0 +1,91 @@
+/* base modal styling for the popup when clicking on a product */
+#bwp-modal {
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: sans-serif;
+  }
+  
+  .bwp-hidden {
+    display: none !important;
+  }
+  
+  .bwp-backdrop {
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.4);
+    backdrop-filter: blur(4px);
+  }
+  
+  .bwp-modal-content {
+    position: relative;
+    background: #fdfbf8;
+    border-radius: 1rem;
+    max-width: 900px;
+    width: 95%;
+    padding: 2rem;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+    z-index: 1;
+  }
+  
+  .bwp-close {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    background: none;
+    border: none;
+    font-size: 2rem;
+    cursor: pointer;
+    color: #9f8170;
+  }
+  
+  .bwp-image-wrapper img {
+    width: 100%;
+    height: auto;
+    border-radius: 1rem;
+    cursor: pointer;
+  }
+  
+  .bwp-modal-info h2 {
+    color: #9f8170;
+    margin-bottom: 1rem;
+  }
+  
+  .bwp-modal-info p {
+    color: #5f5f5f;
+    margin-bottom: 2rem;
+  }
+  
+  .bwp-btn {
+    background-color: #b9c8ad;
+    color: #fff;
+    border: none;
+    padding: 0.75rem 1.5rem;
+    border-radius: 0.5rem;
+    cursor: pointer;
+    font-size: 1rem;
+  }
+  
+  @media (max-width: 768px) {
+    .bwp-modal-content {
+      grid-template-columns: 1fr;
+    }
+  }
+  
+#bwp-modal {
+  opacity: 0;
+  transform: scale(0.96);
+  transition: all 0.3s ease;
+  pointer-events: none;
+}
+
+#bwp-modal.active {
+  opacity: 1;
+  transform: scale(1);
+  pointer-events: auto;
+}
