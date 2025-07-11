@@ -12,6 +12,38 @@
   .bwp-hidden {
     display: none !important;
   }
+
+  /* Modal fade-in / fade-out animation */
+  .bwp-fade-in {
+    animation: bwpFadeIn 0.35s cubic-bezier(0.4,0,0.2,1);
+  }
+  .bwp-fade-out {
+    animation: bwpFadeOut 0.35s cubic-bezier(0.4,0,0.2,1);
+  }
+  @keyframes bwpFadeIn {
+    from { opacity: 0; transform: translateY(40px) scale(0.98); }
+    to   { opacity: 1; transform: translateY(0) scale(1); }
+  }
+  @keyframes bwpFadeOut {
+    from { opacity: 1; transform: translateY(0) scale(1); }
+    to   { opacity: 0; transform: translateY(40px) scale(0.98); }
+  }
+
+  /* Lightbox zoom-in / zoom-out */
+  .bwp-lightbox-zoom-in {
+    animation: bwpLightboxZoomIn 0.35s cubic-bezier(0.4,0,0.2,1);
+  }
+  .bwp-lightbox-zoom-out {
+    animation: bwpLightboxZoomOut 0.35s cubic-bezier(0.4,0,0.2,1);
+  }
+  @keyframes bwpLightboxZoomIn {
+    from { opacity: 0; transform: scale(0.85); }
+    to   { opacity: 1; transform: scale(1); }
+  }
+  @keyframes bwpLightboxZoomOut {
+    from { opacity: 1; transform: scale(1); }
+    to   { opacity: 0; transform: scale(0.85); }
+  }
   
   .bwp-backdrop {
     position: absolute;
@@ -23,57 +55,110 @@
   .bwp-modal-content {
     position: relative;
     background: #fdfbf8;
-    border-radius: 1rem;
+    border-radius: 1.25rem;
     max-width: 900px;
     width: 95%;
     padding: 2rem;
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 2rem;
+    box-shadow: 0 8px 32px rgba(159,129,112,0.13), 0 2px 8px rgba(185,200,173,0.09);
     z-index: 1;
+    transition: box-shadow 0.2s;
   }
   
-  .bwp-close {
+  .bwp-close-btn {
     position: absolute;
     top: 1rem;
     right: 1rem;
     background: none;
     border: none;
-    font-size: 2rem;
+    font-size: 2.2rem;
     cursor: pointer;
     color: #9f8170;
+    line-height: 1;
+    transition: color 0.2s;
+  }
+  .bwp-close-btn:hover {
+    color: #b9c8ad;
   }
   
-  .bwp-image-wrapper img {
+  .bwp-image-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #fff8f3;
+    border-radius: 1rem;
+    box-shadow: 0 2px 12px rgba(159,129,112,0.07);
+    overflow: hidden;
+    padding: 0.5rem;
+  }
+  .bwp-main-image {
     width: 100%;
+    max-width: 380px;
     height: auto;
     border-radius: 1rem;
     cursor: pointer;
+    transition: box-shadow 0.2s;
+    box-shadow: 0 2px 6px rgba(185,200,173,0.07);
+  }
+  .bwp-main-image:hover {
+    box-shadow: 0 4px 16px rgba(159,129,112,0.15);
   }
   
-  .bwp-modal-info h2 {
+  .bwp-title {
     color: #9f8170;
     margin-bottom: 1rem;
+    font-size: 2rem;
+    font-weight: 600;
+    letter-spacing: -0.5px;
   }
-  
-  .bwp-modal-info p {
+  .bwp-description {
     color: #5f5f5f;
-    margin-bottom: 2rem;
+    margin-bottom: 1.5rem;
+    font-size: 1.1rem;
+    line-height: 1.5;
   }
   
-  .bwp-btn {
+  .bwp-add-button {
     background-color: #b9c8ad;
     color: #fff;
     border: none;
-    padding: 0.75rem 1.5rem;
-    border-radius: 0.5rem;
+    padding: 0.85rem 2rem;
+    border-radius: 0.65rem;
     cursor: pointer;
-    font-size: 1rem;
+    font-size: 1.1rem;
+    font-weight: 500;
+    box-shadow: 0 2px 8px rgba(185,200,173,0.08);
+    transition: background 0.2s, box-shadow 0.2s;
+  }
+  .bwp-add-button:hover {
+    background-color: #9f8170;
+    box-shadow: 0 4px 16px rgba(159,129,112,0.15);
   }
   
-  @media (max-width: 768px) {
+  @media (max-width: 900px) {
     .bwp-modal-content {
       grid-template-columns: 1fr;
+      padding: 1.25rem;
+      gap: 1.1rem;
+    }
+    .bwp-main-image {
+      max-width: 100%;
+    }
+  }
+  @media (max-width: 600px) {
+    .bwp-modal-content {
+      width: 99%;
+      padding: 0.5rem;
+      border-radius: 0.7rem;
+    }
+    .bwp-title {
+      font-size: 1.3rem;
+    }
+    .bwp-add-button {
+      font-size: 1rem;
+      padding: 0.7rem 1.2rem;
     }
   }
   
