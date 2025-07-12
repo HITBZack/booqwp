@@ -41,8 +41,11 @@ boxShadowObserver.observe(document.body, { childList: true, subtree: true });
 
     // Helper: get cart_id from page (if present)
     function getCartId() {
-      // Try to find cart_id in a global variable, meta tag, or cookie (customize as needed)
-      // For now, fallback to null
+      // Prefer localStorage key 'bqCartId' if present
+      try {
+        const id = window.localStorage.getItem('bqCartId');
+        if (id && typeof id === 'string' && id.length > 10) return id;
+      } catch {}
       return null;
     }
 
@@ -260,10 +263,50 @@ boxShadowObserver.observe(document.body, { childList: true, subtree: true });
         addButton.setAttribute('data-product-id', productId);
         addButton.textContent = price ? `Add to Cart - ${price}` : 'Add to Cart';
         addButton.onclick = function() {
-          // TODO: Implement add to cart functionality
-          alert(`Added ${title} to cart!`);
-          modal.classList.remove('active');
-          document.body.style.overflow = '';
+          addButton.disabled = true;
+          addButton.textContent = 'Adding...';
+
+          // Prepare payload for /api/1/cart/book
+          const cartId = getCartId();
+          const payload = {
+            item_id: productId,
+            quantity: 1,
+            configuration: { products: {} },
+          };
+          if (cartId) payload.id = cartId;
+
+          fetch('https://timeless-events-party-rentals-ltd.booqableshop.com/api/1/cart/book', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Accept': 'application/json, text/plain, */*',
+              'Origin': window.location.origin,
+            },
+            body: JSON.stringify(payload),
+            credentials: 'include', // In case cookies/session are needed
+          })
+          .then(resp => resp.ok ? resp.json() : Promise.reject(resp))
+          .then(data => {
+            addButton.disabled = false;
+            addButton.textContent = price ? `Add to Cart - ${price}` : 'Add to Cart';
+            // Success feedback
+            alert('Added to cart!');
+            modal.classList.remove('active');
+            document.body.style.overflow = '';
+            // Optionally, update cart UI or show a toast
+          })
+          .catch(async err => {
+            addButton.disabled = false;
+            addButton.textContent = price ? `Add to Cart - ${price}` : 'Add to Cart';
+            let msg = 'Failed to add to cart.';
+            if (err && err.json) {
+              try {
+                const json = await err.json();
+                if (json && json.error) msg += `\n${json.error}`;
+              } catch {}
+            }
+            alert(msg);
+          });
         };
       }
 
