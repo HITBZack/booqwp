@@ -61,9 +61,8 @@ body .booqable-product-inner.bq-branded[style] {
 .bwp-modal-grid {
   display: flex;
   flex-direction: row;
-  align-items: stretch;
-  height: 100%;
-  min-height: 0;
+  align-items: flex-start;
+  /* Remove height: 100% and min-height: 0 */
 }
 
 #bwp-modal {
@@ -79,7 +78,7 @@ body .booqable-product-inner.bq-branded[style] {
 }
 
 .bwp-image-wrapper {
-  flex: 1 1 0;
+  flex: 1 1 auto;
   min-width: 0;
   display: flex;
   align-items: center;
@@ -89,6 +88,7 @@ body .booqable-product-inner.bq-branded[style] {
   box-shadow: 0 2px 12px rgba(159,129,112,0.07);
   padding: 0.5rem;
   max-width: 50%;
+  overflow: hidden;
 }
 
 .bwp-main-image {
@@ -102,12 +102,13 @@ body .booqable-product-inner.bq-branded[style] {
 }
 
 .bwp-details {
-  flex: 1 1 0;
+  flex: 1 1 auto;
   min-width: 0;
   padding: 2.5rem 2.5rem 2.5rem 2rem;
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  justify-content: flex-start;
+  overflow: auto;
 }
 
 .bwp-title {
