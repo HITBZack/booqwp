@@ -45,12 +45,18 @@ body .booqable-product-inner.bq-branded[style] {
   max-height: 600px;
   height: auto;
   box-shadow: 0 8px 32px rgba(159,129,112,0.13), 0 2px 8px rgba(185,200,173,0.09);
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
+  display: block;
   padding: 0;
   overflow-y: auto;
 }
+
+#bwp-modal {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+}
+
 
 .bwp-modal-grid {
   display: flex;
