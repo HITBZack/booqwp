@@ -1,4 +1,26 @@
-/* base modal styling for the popup when clicking on a product */
+/* overriding the booqable product item list display cards */
+body .booqable-product-inner,
+.booqable-component .booqable-product-wrapper .booqable-product-inner,
+.booqable-component .booqable-product-inner,
+body .booqable-product-inner[style],
+body .booqable-product-inner.bq-branded,
+body .booqable-product-inner.bq-branded[style] {
+  box-shadow: none !important;
+}
+
+.booqable-product-inner {
+  background: transparent !important;
+  box-shadow: 0 0 5px rgb(0 0 0 / 0%) !important;
+  border: none !important;
+}
+
+.booqable-product-inner .bq-details {
+  padding: 1rem;
+  background: transparent !important;
+  box-shadow: 0 0 5px rgb(0 0 0 / 0%) !important;
+}
+
+/* our modal styling for the popup when clicking on a product */
 #bwp-modal {
     position: fixed;
     inset: 0;
@@ -175,4 +197,12 @@
   opacity: 1;
   transform: scale(1);
   pointer-events: auto;
+}
+
+/* Ultra-specific override for Booqable box-shadow */
+.booqable-component .booqable-product-wrapper .booqable-product-inner,
+.booqable-component .booqable-product-inner,
+body .booqable-component .booqable-product-inner,
+body .booqable-component .booqable-product-wrapper .booqable-product-inner {
+  box-shadow: none !important;
 }

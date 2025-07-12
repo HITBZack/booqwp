@@ -8,7 +8,20 @@
     return div.innerHTML;
   }
 
-  // Block all click events on product elements using capture phase
+  // Remove box-shadow from Booqable product cards (handles inline styles)
+function removeProductBoxShadows() {
+  document.querySelectorAll('.booqable-product-inner').forEach(el => {
+    el.style.setProperty('box-shadow', 'none', 'important');
+  });
+}
+
+document.addEventListener('DOMContentLoaded', removeProductBoxShadows);
+setTimeout(removeProductBoxShadows, 1000);
+
+const boxShadowObserver = new MutationObserver(removeProductBoxShadows);
+boxShadowObserver.observe(document.body, { childList: true, subtree: true });
+
+// Block all click events on product elements using capture phase
   document.addEventListener('click', function(e) {
     const productInner = e.target.closest('.booqable-product-inner');
     if (!productInner) return;
@@ -107,7 +120,7 @@
 document.addEventListener('DOMContentLoaded', function() {
   // Remove any existing Booqable modals
   const removeBooqableModals = () => {
-    document.querySelectorAll('.booqable-modal, .bq-modal, [class*="modal"], [class*="Modal"]')
+    Array.from(document.querySelectorAll('.booqable-modal, .bq-modal, [class*="modal"], [class*="Modal"]'))
       .filter(el => !el.closest('#bwp-modal'))
       .forEach(el => el.remove());
   };
