@@ -39,20 +39,25 @@ boxShadowObserver.observe(document.body, { childList: true, subtree: true });
     const price = productInner.querySelector('.bq-price')?.textContent?.trim() || '';
     const productId = product.getAttribute('data-id') || '';
 
-    // Extract description
-    let description = productInner.querySelector('.bq-product-description.rx-reset.rx-content p')?.textContent?.trim();
-    if (!description) {
-      // Try fallback to just .bq-product-description
-      description = productInner.querySelector('.bq-product-description')?.textContent?.trim();
-    }
-    if (!description) {
-      description = 'No description available.';
+    // Helper: get cart_id from page (if present)
+    function getCartId() {
+      // Try to find cart_id in a global variable, meta tag, or cookie (customize as needed)
+      // For now, fallback to null
+      return null;
     }
 
-    // Extract all images for gallery
-    const imageNodes = productInner.querySelectorAll('.BFocalImage-citTcH img');
-    const images = Array.from(imageNodes).map(img => img.src).filter(Boolean);
+    // Helper: get Booqable Storefront Token if needed (from meta tag or cookie)
+    function getStorefrontToken() {
+      // Try to find from meta tag or cookie if needed
+      return null;
+    }
+
+    // Extract description/images from DOM as fallback
+    let description = productInner.querySelector('.bq-product-description.rx-reset.rx-content p')?.textContent?.trim();
+    const imageNodesDom = productInner.querySelectorAll('.BFocalImage-citTcH img');
+    let images = Array.from(imageNodesDom).map(img => img.src).filter(Boolean);
     let imageIndex = 0;
+    let fallbackPopulated = false;
 
     // Update modal content
     const modal = document.getElementById('bwp-modal');
@@ -66,28 +71,136 @@ boxShadowObserver.observe(document.body, { childList: true, subtree: true });
 
       if (titleEl) titleEl.innerHTML = sanitize(title);
       if (priceEl) priceEl.textContent = price;
-      if (descEl) descEl.textContent = description;
 
-      // If gallery wrapper doesn't exist, create it below image wrapper
-      if (!galleryWrapper) {
-        const imageWrapper = modal.querySelector('.bwp-image-wrapper');
-        galleryWrapper = document.createElement('div');
-        galleryWrapper.className = 'bwp-gallery-wrapper';
-        imageWrapper.parentNode.insertBefore(galleryWrapper, imageWrapper.nextSibling);
+      // --- Fetch product details from Booqable API ---
+      const apiUrl = 'https://timeless-events-party-rentals-ltd.booqableshop.com/api/3/product_groups';
+      const cartId = getCartId();
+      const payload = {
+        ids: [productId],
+        include: 'photos,products',
+      };
+      if (cartId) payload.cart_id = cartId;
+      fetch(apiUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json, text/plain, */*',
+          'Origin': window.location.origin,
+        },
+        body: JSON.stringify(payload),
+      })
+        .then(resp => resp.ok ? resp.json() : Promise.reject(resp))
+        .then(data => {
+          if (data && data.data && data.data.length > 0) {
+            const prod = data.data[0];
+            const attr = prod.attributes || {};
+            // Description may be HTML
+            description = attr.description || description || 'No description available.';
+            // Find all photo IDs
+            let photoIds = [];
+            if (prod.relationships && prod.relationships.photos && prod.relationships.photos.data) {
+              photoIds = prod.relationships.photos.data.map(p => p.id);
+            }
+            // Map photo IDs to URLs from included
+            if (data.included && Array.isArray(data.included)) {
+              images = photoIds.map(pid => {
+                const photo = data.included.find(p => p.id === pid && p.type === 'photo');
+                return photo?.attributes?.large_url || photo?.attributes?.original_url || null;
+              }).filter(Boolean);
+            }
+            // Update modal with API data
+            if (descEl) {
+              descEl.innerHTML = description;
+            }
+            if (images.length > 0) {
+              updateGallery(images);
+            }
+          } else {
+            // Fallback to DOM data
+            fallbackPopulate();
+          }
+        })
+        .catch(() => {
+          // Fallback to DOM data
+          fallbackPopulate();
+        });
+
+      // Helper: update gallery UI
+      function updateGallery(imgArr) {
+        if (!galleryWrapper) {
+          const imageWrapper = modal.querySelector('.bwp-image-wrapper');
+          galleryWrapper = document.createElement('div');
+          galleryWrapper.className = 'bwp-gallery-wrapper';
+          imageWrapper.parentNode.insertBefore(galleryWrapper, imageWrapper.nextSibling);
+        }
+        galleryWrapper.innerHTML = '';
+        images = imgArr;
+        imageIndex = 0;
+        setMainImage(0);
+        if (images.length > 1) {
+          images.forEach((src, i) => {
+            const thumb = document.createElement('img');
+            thumb.src = src;
+            thumb.className = 'bwp-thumb' + (i === 0 ? ' active' : '');
+            thumb.alt = title + ' preview ' + (i + 1);
+            thumb.style.width = '48px';
+            thumb.style.height = '48px';
+            thumb.style.margin = '0 4px';
+            thumb.style.cursor = 'pointer';
+            thumb.onclick = () => {
+              imageIndex = i;
+              setMainImage(i);
+            };
+            galleryWrapper.appendChild(thumb);
+          });
+          // Arrows
+          const left = document.createElement('span');
+          left.textContent = '◀';
+          left.className = 'bwp-arrow bwp-arrow-left';
+          left.style.cursor = 'pointer';
+          left.style.marginRight = '8px';
+          left.onclick = () => {
+            imageIndex = (imageIndex - 1 + images.length) % images.length;
+            setMainImage(imageIndex);
+          };
+          const right = document.createElement('span');
+          right.textContent = '▶';
+          right.className = 'bwp-arrow bwp-arrow-right';
+          right.style.cursor = 'pointer';
+          right.style.marginLeft = '8px';
+          right.onclick = () => {
+            imageIndex = (imageIndex + 1) % images.length;
+            setMainImage(imageIndex);
+          };
+          galleryWrapper.insertBefore(left, galleryWrapper.firstChild);
+          galleryWrapper.appendChild(right);
+        }
       }
-      galleryWrapper.innerHTML = '';
 
-      // Helper to update main image and highlight thumbnail
+      // Helper: set main image and highlight thumbnail
       function setMainImage(idx) {
         if (imageEl && images[idx]) {
           imageEl.src = images[idx];
           imageEl.alt = title + ' image ' + (idx + 1);
         }
         // Highlight selected thumbnail
-        Array.from(galleryWrapper.querySelectorAll('.bwp-thumb')).forEach((thumb, i) => {
-          thumb.classList.toggle('active', i === idx);
-        });
+        if (galleryWrapper) {
+          Array.from(galleryWrapper.querySelectorAll('.bwp-thumb')).forEach((thumb, i) => {
+            thumb.classList.toggle('active', i === idx);
+          });
+        }
       }
+
+      // Fallback: populate from DOM if API fails
+      function fallbackPopulate() {
+        if (fallbackPopulated) return;
+        fallbackPopulated = true;
+        if (descEl) descEl.textContent = description || 'No description available.';
+        updateGallery(images);
+      }
+
+      // (Declarations moved above; do not redeclare)
+      // (Removed duplicate modal population and setMainImage function)
 
       // Render thumbnails
       if (images.length > 1) {
