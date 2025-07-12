@@ -3,7 +3,7 @@
 Plugin Name: Booqable Modal Overhaul
 Plugin URI: https://github.com/HITBZack/booqwp
 Description: Overrides Booqable’s default product modal with a modern, responsive one. Designed for timelesspartyrentals.ca.
-Version: 1.1.0
+Version: 1.1.1
 Author: Zack (HITBZack)
 GitHub Plugin URI: https://github.com/HITBZack/booqwp
 */

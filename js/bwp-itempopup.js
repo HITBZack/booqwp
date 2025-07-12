@@ -120,9 +120,13 @@ boxShadowObserver.observe(document.body, { childList: true, subtree: true });
 document.addEventListener('DOMContentLoaded', function() {
   // Remove any existing Booqable modals
   const removeBooqableModals = () => {
-    Array.from(document.querySelectorAll('.booqable-modal, .bq-modal, [class*="modal"], [class*="Modal"]'))
-      .filter(el => !el.closest('#bwp-modal'))
-      .forEach(el => el.remove());
+    const modals = document.querySelectorAll('.booqable-modal, .bq-modal, [class*="modal"], [class*="Modal"]');
+
+    modals.forEach(el => {
+      if (!el.closest('#bwp-modal')) {
+        el.remove();
+      }
+    });
   };
   
   // Run immediately and also after a short delay (in case they load later)
