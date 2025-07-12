@@ -383,3 +383,24 @@ body .booqable-component .booqable-product-inner,
 body .booqable-component .booqable-product-wrapper .booqable-product-inner {
   box-shadow: none !important;
 }
+
+/* Nuclear modal height fix */
+#bwp-modal.bwp-modal-overlay.active > .bwp-modal-content {
+  max-height: 600px !important;
+  overflow-y: auto !important;
+  display: block !important; /* Or flex, if you prefer */
+  box-sizing: border-box !important;
+  margin: 0 auto !important;
+  width: 100%;
+  min-width: 320px;
+  max-width: 1000px;
+  border-radius: 18px;
+  background: #fff;
+  padding: 36px;
+}
+
+/* Prevent children from forcing height */
+#bwp-modal.bwp-modal-overlay.active > .bwp-modal-content > * {
+  max-height: 100%;
+  overflow: auto;
+}
