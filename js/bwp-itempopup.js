@@ -11,21 +11,14 @@ const BWP_ENABLE_CUSTOM_POPUP = false; // Set to false to disable custom popup a
     return div.innerHTML;
   }
 
-  // Remove box-shadow from Booqable product cards (handles inline styles)
-function removeProductBoxShadows() {
-  document.querySelectorAll('.booqable-product-inner').forEach(el => {
-    el.style.setProperty('box-shadow', 'none', 'important');
-  });
-}
-
-document.addEventListener('DOMContentLoaded', removeProductBoxShadows);
-setTimeout(removeProductBoxShadows, 1000);
-
-const boxShadowObserver = new MutationObserver(removeProductBoxShadows);
-boxShadowObserver.observe(document.body, { childList: true, subtree: true });
+// I am wanting everything below here to only run if the BWP_ENABLE_CUSTOM_POPUP is true
+if(!BWP_ENABLE_CUSTOM_POPUP)
+  {
+    console.log("Custom popup disabled. Skipping script.");
+    return;
+  }
 
 // Block all click events on product elements using capture phase
-  if (BWP_ENABLE_CUSTOM_POPUP) {
     document.addEventListener('click', function(e) {
       const productInner = e.target.closest('.booqable-product-inner');
       if (!productInner) return;
@@ -37,33 +30,7 @@ boxShadowObserver.observe(document.body, { childList: true, subtree: true });
       // Only proceed if the click is on a valid product
       const product = productInner.closest('.booqable-product');
       if (!product) return;
-      
-      // Extract product info
-      const title = productInner.querySelector('.bq-product-name')?.textContent?.trim() || 'Product';
-      const price = productInner.querySelector('.bq-price')?.textContent?.trim() || '';
-      const productId = product.getAttribute('data-id') || '';
-
-      // ... (rest of modal logic remains unchanged)
-
-      // Helper: get cart_id from page (if present)
-      function getCartId() {
-        // Prefer localStorage key 'bqCartId' if present
-        try {
-          const id = window.localStorage.getItem('bqCartId');
-          if (id && typeof id === 'string' && id.length > 10) return id;
-        } catch {}
-        return null;
-      }
-
-      // Helper: get Booqable Storefront Token if needed (from meta tag or cookie)
-      function getStorefrontToken() {
-        // Try to find from meta tag or cookie if needed
-        return null;
-      }
-
-      // ... (rest of modal logic continues)
     });
-  }
 
 
     // Helper: get cart_id from page (if present)
@@ -73,12 +40,6 @@ boxShadowObserver.observe(document.body, { childList: true, subtree: true });
         const id = window.localStorage.getItem('bqCartId');
         if (id && typeof id === 'string' && id.length > 10) return id;
       } catch {}
-      return null;
-    }
-
-    // Helper: get Booqable Storefront Token if needed (from meta tag or cookie)
-    function getStorefrontToken() {
-      // Try to find from meta tag or cookie if needed
       return null;
     }
 
